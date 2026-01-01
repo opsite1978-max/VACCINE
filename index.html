@@ -7,10 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF0F5; } /* 淺粉紅背景 */
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF0F5; }
         .card-shadow { box-shadow: 0 4px 20px 0 rgba(236, 72, 153, 0.1); }
         .paid-badge { background-color: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; }
-        .table-header-paid { background-color: #FFF7ED; color: #9A3412; }
+        
+        /* 摺疊卡片樣式 */
+        .care-card { transition: all 0.3s ease; }
+        .care-header { cursor: pointer; }
+        .care-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .care-card.active .care-content { max-height: 500px; } /* 展開高度 */
+        .care-card.active .icon-rotate { transform: rotate(180deg); }
     </style>
 </head>
 <body class="min-h-screen pb-12">
@@ -30,7 +36,7 @@
             <label class="block text-gray-700 font-bold mb-2 text-lg">
                 👶 輸入寶寶生日
             </label>
-            <p class="text-xs text-gray-400 mb-4">系統將自動計算公費與自費時程</p>
+            <p class="text-xs text-gray-400 mb-4">系統將自動計算建議接種日期</p>
             <input 
                 type="date" 
                 id="birthDateInput" 
@@ -39,148 +45,156 @@
             >
         </div>
 
-        <div id="scheduleList" class="space-y-3 hidden">
-            </div>
+        <div id="scheduleList" class="space-y-3 hidden"></div>
         
         <div id="emptyState" class="text-center py-6 opacity-60">
             <div class="text-4xl mb-2 animate-bounce">🧸</div>
-            <p class="text-sm">👆 輸入生日，查看客製化行程表</p>
+            <p class="text-sm">👆 輸入生日，查看完整行程</p>
         </div>
 
-        <div class="bg-white rounded-2xl card-shadow border border-orange-100 overflow-hidden">
-            <div class="bg-orange-50 p-4 border-b border-orange-100 flex justify-between items-center">
-                <h3 class="font-bold text-orange-800 text-lg flex items-center gap-2">
-                    💰 自費疫苗懶人包
-                </h3>
-                <span class="text-[10px] bg-white text-orange-600 px-2 py-1 rounded border border-orange-200">醫師推薦</span>
+        <div class="space-y-4">
+            <h3 class="font-bold text-gray-700 text-lg flex items-center gap-2 pl-1">
+                💊 打完針要注意什麼？
+            </h3>
+
+            <div class="bg-white rounded-xl card-shadow border border-blue-100 care-card" onclick="toggleCard(this)">
+                <div class="p-4 flex justify-between items-center care-header">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-blue-100 text-blue-600 p-2 rounded-lg text-xl">🧊</div>
+                        <div>
+                            <div class="font-bold text-gray-800">紅腫痛痛組 (死疫苗)</div>
+                            <div class="text-xs text-gray-400">五合一、肺炎、B肝、A肝...</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 icon-rotate transition-transform">▼</div>
+                </div>
+                <div class="care-content bg-blue-50/50">
+                    <div class="p-4 text-sm text-gray-600 space-y-2 border-t border-blue-100">
+                        <p>● **症狀**：打針處紅腫硬塊，或 48小時內輕微發燒 (約38度)。</p>
+                        <p>● **照護**：當天可**冰敷**紅腫處 (勿揉)，兩天後若有硬塊改熱敷。</p>
+                        <p>● **注意**：若發燒超過 48小時，可能不是疫苗引起的，建議就醫。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow border border-red-100 care-card" onclick="toggleCard(this)">
+                <div class="p-4 flex justify-between items-center care-header">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-red-100 text-red-600 p-2 rounded-lg text-xl">🌡️</div>
+                        <div>
+                            <div class="font-bold text-gray-800">慢半拍發燒組 (活疫苗)</div>
+                            <div class="text-xs text-gray-400">MMR、水痘</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 icon-rotate transition-transform">▼</div>
+                </div>
+                <div class="care-content bg-red-50/50">
+                    <div class="p-4 text-sm text-gray-600 space-y-2 border-t border-red-100">
+                        <p>● **症狀**：打完當下沒事。**第 5-12 天** 才開始發燒或長小紅疹。</p>
+                        <p>● **照護**：這是正常的免疫反應，不具傳染力。多喝水，觀察活力，通常 2-3 天會退。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl card-shadow border border-green-100 care-card" onclick="toggleCard(this)">
+                <div class="p-4 flex justify-between items-center care-header">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-lg text-xl">💪</div>
+                        <div>
+                            <div class="font-bold text-gray-800">左手小勳章 (卡介苗)</div>
+                            <div class="text-xs text-gray-400">滿5個月施打</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 icon-rotate transition-transform">▼</div>
+                </div>
+                <div class="care-content bg-green-50/50">
+                    <div class="p-4 text-sm text-gray-600 space-y-2 border-t border-green-100">
+                        <p>● **流程**：4-6週後會紅腫化膿，之後結痂。</p>
+                        <p>● **禁忌**：**絕對不要擠膿！** 不要擦藥、不要貼OK繃。</p>
+                        <p>● **照護**：保持乾燥，若有膿流出，用無菌紗布吸乾即可。</p>
+                    </div>
+                </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs uppercase table-header-paid border-b border-orange-100">
-                        <tr>
-                            <th class="px-3 py-3 w-1/4">疫苗名稱</th>
-                            <th class="px-3 py-3 w-1/4">建議時程</th>
-                            <th class="px-3 py-3">保護重點</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-orange-50 text-gray-600">
-                        <tr class="hover:bg-orange-50/50">
-                            <td class="px-3 py-3 font-bold text-orange-900">
-                                口服輪狀<br>
-                                <span class="text-[10px] font-normal text-gray-500">(喝的)</span>
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                滿 2, 4 個月<br>
-                                (共2劑)
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                預防嚴重腹瀉、脫水住院。CP值最高。
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-orange-50/50">
-                            <td class="px-3 py-3 font-bold text-orange-900">
-                                腸病毒71型
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                滿 2 個月起<br>
-                                (2~3劑)
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                <span class="text-red-500 font-bold">幼兒園必備</span>。<br>預防重症、肢體麻痺。
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-orange-50/50">
-                            <td class="px-3 py-3 font-bold text-orange-900">
-                                RSV 單株抗體
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                出生/秋冬季<br>
-                                (打1針)
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                針對1歲內嬰兒。<br>保護氣管，防住院首選。
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-orange-50/50">
-                            <td class="px-3 py-3 font-bold text-orange-900">
-                                B型腦膜炎
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                滿 2 個月起<br>
-                                (2~3劑)
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                預防致死率高、惡化快的腦膜炎。建議與五合一分開打。
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-orange-50/50">
-                            <td class="px-3 py-3 font-bold text-orange-900">
-                                肺炎鏈球菌<br>
-                                <span class="text-[10px] font-normal text-gray-500">(加強劑)</span>
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                滿 6 個月
-                            </td>
-                            <td class="px-3 py-3 text-xs">
-                                補強公費 4m~1y 間的空窗期。
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="bg-white rounded-xl card-shadow border border-yellow-100 care-card" onclick="toggleCard(this)">
+                <div class="p-4 flex justify-between items-center care-header">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-yellow-100 text-yellow-600 p-2 rounded-lg text-xl">💰</div>
+                        <div>
+                            <div class="font-bold text-gray-800">自費疫苗懶人包</div>
+                            <div class="text-xs text-gray-400">腸病毒、RSV、腦膜炎</div>
+                        </div>
+                    </div>
+                    <div class="text-gray-400 icon-rotate transition-transform">▼</div>
+                </div>
+                <div class="care-content bg-yellow-50/50">
+                    <div class="p-4 text-sm text-gray-600 space-y-2 border-t border-yellow-100">
+                         <p>● **RSV**：針對嬰兒氣管保護。出生在秋冬(流行季)建議打；非流行季出生可等10月再打。</p>
+                         <p>● **腸病毒**：預防重症。建議入幼兒園前打滿2劑。</p>
+                         <p>● **腦膜炎B型**：這支比較痛、易發燒，建議跟五合一分開打。</p>
+                    </div>
+                </div>
             </div>
-            <div class="p-3 bg-orange-50 text-xs text-orange-800 text-center">
-                ※ 詳細費用與庫存請洽櫃台人員
-            </div>
+
         </div>
 
     </div>
 
-    <div class="text-center text-xs text-gray-400 pb-6">
+    <div class="text-center text-xs text-gray-400 pb-6 pt-4">
         © 2025-2026 晨禾診所 Chenhe Clinic
     </div>
 
     <script>
-        // 疫苗資料庫 (公費標準 + 自費建議)
+        // 互動功能：點擊卡片展開/收合
+        function toggleCard(card) {
+            card.classList.toggle('active');
+        }
+
+        // 疫苗資料庫
         const vaccines = [
-            // --- 出生 & 1個月 ---
+            // --- 出生 ---
             { age: 0, name: "B型肝炎 (1)", type: "公費", note: "出生24H內", paid: false },
-            { age: 0, name: "RSV 單株抗體", type: "自費", note: "建議1歲內施打", paid: true },
+            
+            // --- RSV 特別邏輯 ---
+            // RSV 不是一定要在 0 個月打，而是要在「流行季 (10月-3月)」。
+            // 這裡設定 age: 0，但在備註做詳細說明，避免家長誤會。
+            { age: 0, name: "RSV 單株抗體", type: "自費", note: "生於秋冬:出生即打 / 生於春夏:建議10月施打", paid: true },
+            
             { age: 1, name: "B型肝炎 (2)", type: "公費", note: "滿1個月", paid: false },
             
-            // --- 2個月 (最忙碌) ---
+            // --- 2個月 ---
             { age: 2, name: "五合一 (1)", type: "公費", note: "滿2個月", paid: false },
             { age: 2, name: "13價肺炎 (1)", type: "公費", note: "滿2個月", paid: false },
-            { age: 2, name: "口服輪狀病毒 (1)", type: "自費", note: "建議搭配", paid: true },
-            { age: 2, name: "腸病毒71型 (1)", type: "自費", note: "建議施打", paid: true },
-            { age: 2, name: "B型腦膜炎 (1)", type: "自費", note: "建議分開打", paid: true },
+            { age: 2, name: "口服輪狀病毒 (1)", type: "自費", note: "強烈建議", paid: true },
+            { age: 2, name: "腸病毒71型 (1)", type: "自費", note: "滿2個月起可打", paid: true },
+            { age: 2, name: "B型腦膜炎 (1)", type: "自費", note: "建議與五合一隔開", paid: true },
 
             // --- 4個月 ---
             { age: 4, name: "五合一 (2)", type: "公費", note: "滿4個月", paid: false },
             { age: 4, name: "13價肺炎 (2)", type: "公費", note: "滿4個月", paid: false },
-            { age: 4, name: "口服輪狀病毒 (2)", type: "自費", note: "第二劑 (完成)", paid: true },
+            { age: 4, name: "口服輪狀病毒 (2)", type: "自費", note: "完成療程", paid: true },
             { age: 4, name: "腸病毒71型 (2)", type: "自費", note: "滿4個月", paid: true },
             { age: 4, name: "B型腦膜炎 (2)", type: "自費", note: "滿4個月", paid: true },
 
             // --- 5-6個月 ---
-            { age: 5, name: "卡介苗", type: "公費", note: "化膿勿擠壓", paid: false },
+            { age: 5, name: "卡介苗", type: "公費", note: "化膿正常 勿擠壓", paid: false },
             { age: 6, name: "五合一 (3)", type: "公費", note: "滿6個月", paid: false },
             { age: 6, name: "B型肝炎 (3)", type: "公費", note: "滿6個月", paid: false },
             { age: 6, name: "流感疫苗", type: "公費", note: "每年10月開打", paid: false },
             
-            // --- 1歲 (周歲) ---
-            { age: 12, name: "MMR (1)", type: "公費", note: "滿1歲", paid: false },
+            // --- 1歲 ---
+            { age: 12, name: "MMR (1)", type: "公費", note: "5-12天後可能發燒", paid: false },
             { age: 12, name: "水痘 (1)", type: "公費", note: "滿1歲", paid: false },
             { age: 12, name: "13價肺炎 (3)", type: "公費", note: "滿1歲 (標準劑)", paid: false },
             { age: 12, name: "B型腦膜炎 (3)", type: "自費", note: "滿週歲追加", paid: true },
             { age: 14, name: "腸病毒71型 (3)", type: "自費", note: "若打高端需第3劑", paid: true },
 
-            // --- 1歲3個月 ~ 2歲 ---
+            // --- 1歲3個月後 ---
             { age: 15, name: "日本腦炎 (1)", type: "公費", note: "滿1歲3個月", paid: false },
             { age: 18, name: "五合一 (4)", type: "公費", note: "滿1歲6個月", paid: false },
             { age: 18, name: "A型肝炎 (1)", type: "公費", note: "滿1歲6個月", paid: false },
             { age: 27, name: "日本腦炎 (2)", type: "公費", note: "滿2歲3個月", paid: false },
-            { age: 27, name: "A型肝炎 (2)", type: "公費", note: "隔6個月", paid: false },
+            { age: 27, name: "A型肝炎 (2)", type: "公費", note: "與第1劑隔6個月", paid: false },
             
             // --- 入學前 ---
             { age: 36, name: "腸病毒 (補打)", type: "自費", note: "入幼兒園前建議", paid: true },
@@ -210,7 +224,6 @@
                 
                 let statusClass, statusText, bgClass, nameColor;
 
-                // 樣式判斷邏輯
                 if (diffDays < -30) {
                     statusText = "已完成";
                     statusClass = "text-gray-400 font-bold";
@@ -233,14 +246,10 @@
                     nameColor = "text-gray-800";
                 }
 
-                // 自費疫苗特殊樣式
                 let paidBadge = '';
                 if (v.paid) {
                     paidBadge = '<span class="text-[10px] paid-badge px-1.5 py-0.5 rounded font-bold ml-2">自費建議</span>';
-                    // 如果是自費且還沒過期，用比較顯眼的黃色背景
-                    if (diffDays > 0) {
-                        bgClass = "bg-yellow-50 border-yellow-200";
-                    }
+                    if (diffDays > 0) bgClass = "bg-yellow-50 border-yellow-200";
                 }
 
                 const dateStr = dueDate.toLocaleDateString('zh-TW');
