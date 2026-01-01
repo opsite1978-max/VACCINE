@@ -7,75 +7,112 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF5F5; } /* 粉紅寶寶底色 */
-        .card-shadow { box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05); }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF0F5; }
+        .card-shadow { box-shadow: 0 4px 20px 0 rgba(236, 72, 153, 0.1); }
+        .table-head { background-color: #FCE7F3; color: #BE185D; }
     </style>
 </head>
-<body class="bg-pink-50 min-h-screen pb-10">
+<body class="min-h-screen pb-10">
 
-    <div class="bg-white p-4 shadow-sm sticky top-0 z-10 border-b border-pink-100">
+    <div class="bg-white p-4 shadow-sm sticky top-0 z-20 border-b border-pink-100">
         <div class="max-w-md mx-auto flex items-center justify-center">
             <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                🏥 晨禾診所 <span class="text-sm font-normal text-pink-500 bg-pink-100 px-2 py-0.5 rounded-full">疫苗管家</span>
+                🏥 晨禾診所 <span class="text-xs font-normal text-white bg-pink-500 px-2 py-1 rounded-full">疫苗管家</span>
             </h1>
         </div>
     </div>
 
     <div class="max-w-md mx-auto p-4">
         
-        <div class="bg-white rounded-2xl p-6 mb-6 card-shadow border border-pink-100 text-center">
-            <label class="block text-gray-600 font-bold mb-3 text-lg">
-                👶 請輸入寶寶生日
+        <div class="bg-white rounded-2xl p-6 mb-6 card-shadow border-2 border-pink-50 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-pink-400"></div>
+            <label class="block text-gray-700 font-bold mb-2 text-lg">
+                👶 輸入寶寶生日
             </label>
+            <p class="text-xs text-gray-400 mb-4">系統會自動算出所有疫苗的預計日期</p>
             <input 
                 type="date" 
                 id="birthDateInput" 
-                class="w-full p-4 text-lg border-2 border-pink-200 rounded-xl focus:outline-none focus:border-pink-400 text-center text-gray-700 bg-pink-50"
+                class="w-full p-3 text-lg border-2 border-pink-100 rounded-xl focus:outline-none focus:border-pink-400 text-center text-gray-700 bg-pink-50"
                 onchange="calculateSchedule()"
             >
-            <p class="text-xs text-gray-400 mt-2">我們會自動幫您算出接種日期喔！</p>
         </div>
 
-        <div id="scheduleList" class="space-y-4 hidden">
+        <div id="scheduleList" class="space-y-3 hidden mb-8">
             </div>
 
-        <div id="emptyState" class="text-center py-10 opacity-60">
-            <div class="text-4xl mb-2">🧸</div>
-            <p>輸入生日後，行程表就會出現囉！</p>
+        <div id="emptyState" class="text-center py-6 opacity-60 mb-8">
+            <div class="text-4xl mb-2 animate-bounce">🧸</div>
+            <p class="text-sm">👆 請先輸入生日，幫您排程喔！</p>
+        </div>
+
+        <div class="bg-white rounded-2xl p-5 card-shadow border border-pink-100">
+            <h3 class="font-bold text-gray-700 text-lg mb-4 flex items-center gap-2">
+                📅 完整接種時程表
+                <span class="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">參考用</span>
+            </h3>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs uppercase table-head">
+                        <tr>
+                            <th scope="col" class="px-3 py-3 rounded-tl-lg">年齡</th>
+                            <th scope="col" class="px-3 py-3">疫苗</th>
+                            <th scope="col" class="px-3 py-3 rounded-tr-lg">備註</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-pink-50">
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">出生</td><td>B肝(1)</td><td class="text-xs">越早越好</td></tr>
+                        <tr><td class="px-3 py-3 font-medium">1個月</td><td>B肝(2)</td><td class="text-xs"></td></tr>
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">2個月</td><td>五合一(1)<br>肺炎(1)</td><td class="text-xs text-pink-600">可加:輪狀,RSV</td></tr>
+                        <tr><td class="px-3 py-3 font-medium">4個月</td><td>五合一(2)<br>肺炎(2)</td><td class="text-xs">紅腫可冰敷</td></tr>
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">5個月</td><td>卡介苗</td><td class="text-xs text-red-500">化膿勿擠壓</td></tr>
+                        <tr><td class="px-3 py-3 font-medium">6個月</td><td>五合一(3)<br>B肝(3)</td><td class="text-xs">半歲囉</td></tr>
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">1歲</td><td>MMR(1)<br>水痘(1)<br>肺炎(3)</td><td class="text-xs text-red-500">發燒魔王關</td></tr>
+                        <tr><td class="px-3 py-3 font-medium">1歲3月</td><td>日本腦炎(1)</td><td class="text-xs">活疫苗</td></tr>
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">1歲6月</td><td>五合一(4)<br>A肝(1)</td><td class="text-xs"></td></tr>
+                        <tr><td class="px-3 py-3 font-medium">2歲3月</td><td>日本腦炎(2)<br>A肝(2)</td><td class="text-xs">完成幼兒期</td></tr>
+                        <tr class="bg-pink-50/30"><td class="px-3 py-3 font-medium">5歲</td><td>MMR(2)<br>四合一</td><td class="text-xs">入學前</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 p-3 bg-yellow-50 rounded-lg text-xs text-yellow-800 border border-yellow-100">
+                <span class="font-bold">⚠️ 活疫苗原則：</span>
+                <br>MMR、水痘、日本腦炎若沒「同一天打」，中間必須間隔 28 天喔！
+            </div>
         </div>
 
     </div>
 
-    <div class="text-center text-xs text-gray-400 pb-6">
+    <div class="text-center text-xs text-gray-400 pb-8">
         © 2025-2026 晨禾診所 Chenhe Clinic
     </div>
 
     <script>
-        // 1. 疫苗資料庫 (整合了我們之前的整理)
         const vaccines = [
-            { age: 0, name: "B型肝炎 (第1劑)", type: "死疫苗", note: "出生24H內", paid: false },
-            { age: 1, name: "B型肝炎 (第2劑)", type: "死疫苗", note: "滿1個月", paid: false },
-            { age: 2, name: "五合一 (第1劑)", type: "死疫苗", note: "滿2個月", paid: false },
-            { age: 2, name: "13價肺炎 (第1劑)", type: "死疫苗", note: "滿2個月", paid: false },
+            { age: 0, name: "B型肝炎 (1)", type: "死疫苗", note: "出生24H內", paid: false },
+            { age: 1, name: "B型肝炎 (2)", type: "死疫苗", note: "滿1個月", paid: false },
+            { age: 2, name: "五合一 (1)", type: "死疫苗", note: "滿2個月", paid: false },
+            { age: 2, name: "13價肺炎 (1)", type: "死疫苗", note: "滿2個月", paid: false },
             { age: 2, name: "口服輪狀病毒", type: "活疫苗", note: "建議自費", paid: true },
-            { age: 2, name: "RSV單株抗體", type: "抗體", note: "建議自費 (高風險)", paid: true },
-            { age: 4, name: "五合一 (第2劑)", type: "死疫苗", note: "滿4個月", paid: false },
-            { age: 4, name: "13價肺炎 (第2劑)", type: "死疫苗", note: "滿4個月", paid: false },
-            { age: 5, name: "卡介苗", type: "活疫苗", note: "5-8個月內施打", paid: false },
-            { age: 6, name: "五合一 (第3劑)", type: "死疫苗", note: "滿6個月", paid: false },
-            { age: 6, name: "B型肝炎 (第3劑)", type: "死疫苗", note: "滿6個月", paid: false },
-            { age: 6, name: "流感疫苗 (初次)", type: "死疫苗", note: "每年10月開打", paid: false },
-            { age: 12, name: "MMR (第1劑)", type: "活疫苗", note: "滿1歲 (大魔王關)", paid: false },
-            { age: 12, name: "水痘 (第1劑)", type: "活疫苗", note: "滿1歲", paid: false },
-            { age: 12, name: "13價肺炎 (第3劑)", type: "死疫苗", note: "滿1歲", paid: false },
-            { age: 15, name: "日本腦炎 (第1劑)", type: "活疫苗", note: "滿1歲3個月", paid: false },
-            { age: 18, name: "五合一 (第4劑)", type: "死疫苗", note: "滿1歲6個月", paid: false },
-            { age: 18, name: "A型肝炎 (第1劑)", type: "死疫苗", note: "滿1歲6個月", paid: false },
-            { age: 27, name: "日本腦炎 (第2劑)", type: "活疫苗", note: "滿2歲3個月", paid: false },
-            { age: 27, name: "A型肝炎 (第2劑)", type: "死疫苗", note: "與第1劑隔6個月", paid: false },
-            { age: 36, name: "腸病毒71型", type: "死疫苗", note: "建議3歲入學前打", paid: true },
-            { age: 60, name: "MMR (第2劑)", type: "活疫苗", note: "滿5歲入小學前", paid: false },
-            { age: 60, name: "四合一 (單劑)", type: "死疫苗", note: "滿5歲入小學前", paid: false }
+            { age: 2, name: "RSV單株抗體", type: "抗體", note: "自費(高風險)", paid: true },
+            { age: 4, name: "五合一 (2)", type: "死疫苗", note: "滿4個月", paid: false },
+            { age: 4, name: "13價肺炎 (2)", type: "死疫苗", note: "滿4個月", paid: false },
+            { age: 5, name: "卡介苗", type: "活疫苗", note: "5-8個月內", paid: false },
+            { age: 6, name: "五合一 (3)", type: "死疫苗", note: "滿6個月", paid: false },
+            { age: 6, name: "B型肝炎 (3)", type: "死疫苗", note: "滿6個月", paid: false },
+            { age: 6, name: "流感疫苗", type: "死疫苗", note: "每年10月開打", paid: false },
+            { age: 12, name: "MMR (1)", type: "活疫苗", note: "滿1歲", paid: false },
+            { age: 12, name: "水痘 (1)", type: "活疫苗", note: "滿1歲", paid: false },
+            { age: 12, name: "13價肺炎 (3)", type: "死疫苗", note: "滿1歲", paid: false },
+            { age: 15, name: "日本腦炎 (1)", type: "活疫苗", note: "滿1歲3個月", paid: false },
+            { age: 18, name: "五合一 (4)", type: "死疫苗", note: "滿1歲6個月", paid: false },
+            { age: 18, name: "A型肝炎 (1)", type: "死疫苗", note: "滿1歲6個月", paid: false },
+            { age: 27, name: "日本腦炎 (2)", type: "活疫苗", note: "滿2歲3個月", paid: false },
+            { age: 27, name: "A型肝炎 (2)", type: "死疫苗", note: "與第1劑隔6個月", paid: false },
+            { age: 36, name: "腸病毒71型", type: "死疫苗", note: "建議3歲入學前", paid: true },
+            { age: 60, name: "MMR (2)", type: "活疫苗", note: "滿5歲入小學前", paid: false },
+            { age: 60, name: "四合一", type: "死疫苗", note: "滿5歲入小學前", paid: false }
         ];
 
         function calculateSchedule() {
@@ -87,31 +124,27 @@
             const listDiv = document.getElementById('scheduleList');
             const emptyDiv = document.getElementById('emptyState');
             
-            listDiv.innerHTML = ''; // 清空列表
+            listDiv.innerHTML = ''; 
             listDiv.classList.remove('hidden');
             emptyDiv.classList.add('hidden');
 
             vaccines.forEach(v => {
-                // 計算預計日期：生日 + 月份
                 let dueDate = new Date(birthDate);
                 dueDate.setMonth(birthDate.getMonth() + v.age);
                 
-                // 計算狀態
                 const diffTime = dueDate - today;
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
-                let statusClass = "";
-                let statusText = "";
-                let bgClass = "bg-white";
+                let statusClass, statusText, bgClass;
 
                 if (diffDays < -30) {
-                    statusText = "已過期";
+                    statusText = "已完成";
                     statusClass = "text-gray-400 font-bold";
-                    bgClass = "bg-gray-50 border-gray-200 opacity-70";
+                    bgClass = "bg-gray-50 border-gray-100 opacity-60 grayscale";
                 } else if (diffDays <= 0) {
                     statusText = "請儘速接種";
-                    statusClass = "text-red-500 font-bold animate-pulse";
-                    bgClass = "bg-red-50 border-red-200";
+                    statusClass = "text-pink-600 font-bold animate-pulse";
+                    bgClass = "bg-red-50 border-red-200 ring-2 ring-red-100";
                 } else if (diffDays <= 30) {
                     statusText = "即將到來";
                     statusClass = "text-orange-500 font-bold";
@@ -122,25 +155,22 @@
                     bgClass = "bg-white border-green-100";
                 }
 
-                // 格式化日期 YYYY/MM/DD
                 const dateStr = dueDate.toLocaleDateString('zh-TW');
 
-                // 建立卡片 HTML
                 const itemHtml = `
-                    <div class="${bgClass} p-4 rounded-xl border flex justify-between items-center card-shadow transition hover:scale-[1.02]">
+                    <div class="${bgClass} p-4 rounded-xl border flex justify-between items-center transition hover:scale-[1.01]">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-1">
-                                <span class="font-bold text-gray-800 text-lg">${v.name}</span>
-                                ${v.paid ? '<span class="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded">自費</span>' : ''}
+                                <span class="font-bold text-gray-800 text-base">${v.name}</span>
+                                ${v.paid ? '<span class="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded border border-yellow-200">自費</span>' : ''}
                             </div>
-                            <div class="text-sm text-gray-500 flex flex-col">
-                                <span>🗓️ 預計: ${dateStr}</span>
-                                <span class="text-xs text-gray-400 mt-0.5">${v.type} • ${v.note}</span>
+                            <div class="text-sm text-gray-500">
+                                🗓️ ${dateStr} <span class="text-xs text-gray-400 mx-1">|</span> <span class="text-xs">${v.note}</span>
                             </div>
                         </div>
-                        <div class="text-right min-w-[80px]">
-                            <div class="${statusClass} text-sm">${statusText}</div>
-                            <div class="text-xs text-gray-400 mt-1">${diffDays > 0 ? '還有 ' + diffDays + ' 天' : ''}</div>
+                        <div class="text-right min-w-[70px]">
+                            <div class="${statusClass} text-xs">${statusText}</div>
+                            <div class="text-[10px] text-gray-400 mt-1">${diffDays > 0 ? diffDays + ' 天後' : ''}</div>
                         </div>
                     </div>
                 `;
