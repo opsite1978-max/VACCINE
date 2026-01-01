@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>晨禾診所 - 寶寶疫苗小幫手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FFF5F5; } /* 粉紅寶寶底色 */
+        .card-shadow { box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-pink-50 min-h-screen pb-10">
+
+    <div class="bg-white p-4 shadow-sm sticky top-0 z-10 border-b border-pink-100">
+        <div class="max-w-md mx-auto flex items-center justify-center">
+            <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                🏥 晨禾診所 <span class="text-sm font-normal text-pink-500 bg-pink-100 px-2 py-0.5 rounded-full">疫苗管家</span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto p-4">
+        
+        <div class="bg-white rounded-2xl p-6 mb-6 card-shadow border border-pink-100 text-center">
+            <label class="block text-gray-600 font-bold mb-3 text-lg">
+                👶 請輸入寶寶生日
+            </label>
+            <input 
+                type="date" 
+                id="birthDateInput" 
+                class="w-full p-4 text-lg border-2 border-pink-200 rounded-xl focus:outline-none focus:border-pink-400 text-center text-gray-700 bg-pink-50"
+                onchange="calculateSchedule()"
+            >
+            <p class="text-xs text-gray-400 mt-2">我們會自動幫您算出接種日期喔！</p>
+        </div>
+
+        <div id="scheduleList" class="space-y-4 hidden">
+            </div>
+
+        <div id="emptyState" class="text-center py-10 opacity-60">
+            <div class="text-4xl mb-2">🧸</div>
+            <p>輸入生日後，行程表就會出現囉！</p>
+        </div>
+
+    </div>
+
+    <div class="text-center text-xs text-gray-400 pb-6">
+        © 2025-2026 晨禾診所 Chenhe Clinic
+    </div>
+
+    <script>
+        // 1. 疫苗資料庫 (整合了我們之前的整理)
+        const vaccines = [
+            { age: 0, name: "B型肝炎 (第1劑)", type: "死疫苗", note: "出生24H內", paid: false },
+            { age: 1, name: "B型肝炎 (第2劑)", type: "死疫苗", note: "滿1個月", paid: false },
+            { age: 2, name: "五合一 (第1劑)", type: "死疫苗", note: "滿2個月", paid: false },
+            { age: 2, name: "13價肺炎 (第1劑)", type: "死疫苗", note: "滿2個月", paid: false },
+            { age: 2, name: "口服輪狀病毒", type: "活疫苗", note: "建議自費", paid: true },
+            { age: 2, name: "RSV單株抗體", type: "抗體", note: "建議自費 (高風險)", paid: true },
+            { age: 4, name: "五合一 (第2劑)", type: "死疫苗", note: "滿4個月", paid: false },
+            { age: 4, name: "13價肺炎 (第2劑)", type: "死疫苗", note: "滿4個月", paid: false },
+            { age: 5, name: "卡介苗", type: "活疫苗", note: "5-8個月內施打", paid: false },
+            { age: 6, name: "五合一 (第3劑)", type: "死疫苗", note: "滿6個月", paid: false },
+            { age: 6, name: "B型肝炎 (第3劑)", type: "死疫苗", note: "滿6個月", paid: false },
+            { age: 6, name: "流感疫苗 (初次)", type: "死疫苗", note: "每年10月開打", paid: false },
+            { age: 12, name: "MMR (第1劑)", type: "活疫苗", note: "滿1歲 (大魔王關)", paid: false },
+            { age: 12, name: "水痘 (第1劑)", type: "活疫苗", note: "滿1歲", paid: false },
+            { age: 12, name: "13價肺炎 (第3劑)", type: "死疫苗", note: "滿1歲", paid: false },
+            { age: 15, name: "日本腦炎 (第1劑)", type: "活疫苗", note: "滿1歲3個月", paid: false },
+            { age: 18, name: "五合一 (第4劑)", type: "死疫苗", note: "滿1歲6個月", paid: false },
+            { age: 18, name: "A型肝炎 (第1劑)", type: "死疫苗", note: "滿1歲6個月", paid: false },
+            { age: 27, name: "日本腦炎 (第2劑)", type: "活疫苗", note: "滿2歲3個月", paid: false },
+            { age: 27, name: "A型肝炎 (第2劑)", type: "死疫苗", note: "與第1劑隔6個月", paid: false },
+            { age: 36, name: "腸病毒71型", type: "死疫苗", note: "建議3歲入學前打", paid: true },
+            { age: 60, name: "MMR (第2劑)", type: "活疫苗", note: "滿5歲入小學前", paid: false },
+            { age: 60, name: "四合一 (單劑)", type: "死疫苗", note: "滿5歲入小學前", paid: false }
+        ];
+
+        function calculateSchedule() {
+            const birthInput = document.getElementById('birthDateInput').value;
+            if (!birthInput) return;
+
+            const birthDate = new Date(birthInput);
+            const today = new Date();
+            const listDiv = document.getElementById('scheduleList');
+            const emptyDiv = document.getElementById('emptyState');
+            
+            listDiv.innerHTML = ''; // 清空列表
+            listDiv.classList.remove('hidden');
+            emptyDiv.classList.add('hidden');
+
+            vaccines.forEach(v => {
+                // 計算預計日期：生日 + 月份
+                let dueDate = new Date(birthDate);
+                dueDate.setMonth(birthDate.getMonth() + v.age);
+                
+                // 計算狀態
+                const diffTime = dueDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let statusClass = "";
+                let statusText = "";
+                let bgClass = "bg-white";
+
+                if (diffDays < -30) {
+                    statusText = "已過期";
+                    statusClass = "text-gray-400 font-bold";
+                    bgClass = "bg-gray-50 border-gray-200 opacity-70";
+                } else if (diffDays <= 0) {
+                    statusText = "請儘速接種";
+                    statusClass = "text-red-500 font-bold animate-pulse";
+                    bgClass = "bg-red-50 border-red-200";
+                } else if (diffDays <= 30) {
+                    statusText = "即將到來";
+                    statusClass = "text-orange-500 font-bold";
+                    bgClass = "bg-orange-50 border-orange-200";
+                } else {
+                    statusText = "未到";
+                    statusClass = "text-green-600 font-medium";
+                    bgClass = "bg-white border-green-100";
+                }
+
+                // 格式化日期 YYYY/MM/DD
+                const dateStr = dueDate.toLocaleDateString('zh-TW');
+
+                // 建立卡片 HTML
+                const itemHtml = `
+                    <div class="${bgClass} p-4 rounded-xl border flex justify-between items-center card-shadow transition hover:scale-[1.02]">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-gray-800 text-lg">${v.name}</span>
+                                ${v.paid ? '<span class="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded">自費</span>' : ''}
+                            </div>
+                            <div class="text-sm text-gray-500 flex flex-col">
+                                <span>🗓️ 預計: ${dateStr}</span>
+                                <span class="text-xs text-gray-400 mt-0.5">${v.type} • ${v.note}</span>
+                            </div>
+                        </div>
+                        <div class="text-right min-w-[80px]">
+                            <div class="${statusClass} text-sm">${statusText}</div>
+                            <div class="text-xs text-gray-400 mt-1">${diffDays > 0 ? '還有 ' + diffDays + ' 天' : ''}</div>
+                        </div>
+                    </div>
+                `;
+                listDiv.innerHTML += itemHtml;
+            });
+        }
+    </script>
+</body>
+</html>
